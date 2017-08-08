@@ -12,5 +12,8 @@
     "assani3"
   ],
   "author": "Mehdi Elhaij",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.15.4"
+  }
 }
