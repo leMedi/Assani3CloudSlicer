@@ -5,6 +5,12 @@ var app        = express();                 // define our app using express
 var port = process.env.PORT || 8080;        // set our port
 
 
+// ROUTES FOR OUR API
+// =============================================================================
+var slicerRouter = require('./slicerRouter');
+
+app.use('/slicer', slicerRouter);
+
 // test route to make sure everything is working (accessed at GET http://localhost:8080/)
 app.get('/', function(req, res) {
     res.json({ message: 'Hello World :)' });   
