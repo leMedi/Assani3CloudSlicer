@@ -1,13 +1,18 @@
 // call the packages we need
 var express    = require('express');        // call express
 var app        = express();                 // define our app using express
+var cors = require('cors');
 
 var port = process.env.PORT || 8080;        // set our port
+
+app.use(cors());
+
 
 
 // ROUTES FOR OUR API
 // =============================================================================
 var slicerRouter = require('./slicerRouter');
+
 
 app.use('/slicer', slicerRouter);
 
