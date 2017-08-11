@@ -70,3 +70,29 @@ function parseGcoderOutput(gcoderOutput){
     return Output;
 	// callback(estimatedTime, estimatedFilamentLength, Dimensions);
 }
+
+// get density for plastic used to print the object
+function getDensity(fillType){ // en g/cm3 (metric system is cool)
+	fillType = fillType.toString().toUpperCase();
+	switch(fillType){
+		case "ABS":
+			return 1.4;
+		case "PLA":
+			return 1.25;
+	}
+}
+
+function calculateWeight(fillLength, fillDiameter, fillType){ // en g
+
+	// default values
+    var fillDiameter = typeof fillDiameter !== 'undefined' ?  parseInt(fillDiameter) : 1.75; // most of the printers we have, use fillament of this diametre
+	var fillType = typeof fillType !== 'undefined' ?  fillType : "ABS";
+
+	var fillradius = fillDiameter/2,
+		section = fillradius * fillradius * Math.PI,
+		volume = section * fillLength; // in mm3
+
+	var volumeCmCube = volume * 0.001; // convert volume to cm3
+
+	return volumeCmCube * getDensity(fillType); // weight in g
+}
