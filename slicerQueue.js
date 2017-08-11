@@ -8,6 +8,11 @@ function slice(Id) {
     runSlic3r(Id, "1", function (stlFileId) {
         runGcoder(stlFileId, function(stdout) {
             var fileInfo = parseGcoderOutput(stdout);
+            fileInfo.estimatedWeight = calculateWeight(fileInfo.estimatedFilamentLength);
+            
+            console.log("time: " + fileInfo.estimatedTime); 
+            console.log("length: " + fileInfo.estimatedFilamentLength);
+            console.log("dimension: x=" + fileInfo.Dimensions.X + " y=" + fileInfo.Dimensions.Y + " z=" + fileInfo.Dimensions.Z); 
         });
     });
 }
