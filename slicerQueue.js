@@ -7,11 +7,7 @@ var gcoderPath = path.join(__dirname, "./bin/gcoder.py");
 function slice(Id) {
     runSlic3r(Id, "1", function (stlFileId) {
         runGcoder(stlFileId, function(stdout) {
-            parseGcoderOutput(stdout, function (t, l, d) {
-                console.log("time: " + t); 
-                console.log("length: " + l); 
-                console.log("dimension: x=" + d.X + " y=" + d.Y + " z=" + d.Z); 
-            });
+            var fileInfo = parseGcoderOutput(stdout);
         });
     });
 }
@@ -49,20 +45,23 @@ function runGcoder(gcodeFileId, callback, errorCb) {
 	});
 }
 
-function parseGcoderOutput(gcoderOutput, callback){
-	var Dimensions = {
-		X: 0,
-		Y: 0,
-		Z: 0
+function parseGcoderOutput(gcoderOutput){
+	var Output = {
+        Dimensions: {
+            X: 0,
+            Y: 0,
+            Z: 0
+        }
 	};
 
 	lines = gcoderOutput.split("\n");
 
-	var estimatedTime = lines[9].substr(20); // get estimated print time
-	var estimatedFilamentLength = lines[7].slice(3,lines[7].length-2); // get estimated filament to be used for printing object
+	Output.estimatedTime = lines[9].substr(20); // get estimated print time
+	Output.estimatedFilamentLength = lines[7].slice(3,lines[7].length-2); // get estimated filament to be used for printing object
 	Dimensions.X = lines[3].slice(lines[3].indexOf("(")+1, lines[3].indexOf(")")); 
 	Dimensions.Y = lines[4].slice(lines[4].indexOf("(")+1, lines[4].indexOf(")")); 
 	Dimensions.Z = lines[5].slice(lines[5].indexOf("(")+1, lines[5].indexOf(")")); 
 
-	callback(estimatedTime, estimatedFilamentLength, Dimensions);
+    return Output;
+	// callback(estimatedTime, estimatedFilamentLength, Dimensions);
 }
