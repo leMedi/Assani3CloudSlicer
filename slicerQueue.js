@@ -4,6 +4,17 @@ var exec = require('child_process').exec;
 var slic3rPath = path.join(__dirname, "./bin/Slic3r/slic3r-console.exe");
 var gcoderPath = path.join(__dirname, "./bin/gcoder.py");
 
+function slice(Id) {
+    runSlic3r(Id, "1", function (stlFileId) {
+        runGcoder(stlFileId, function(stdout) {
+            parseGcoderOutput(stdout, function (t, l, d) {
+                console.log("time: " + t); 
+                console.log("length: " + l); 
+                console.log("dimension: x=" + d.X + " y=" + d.Y + " z=" + d.Z); 
+            });
+        });
+    });
+}
 
 function runSlic3r(stlFileId, config, callback, errorCb) {
     
