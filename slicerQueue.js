@@ -20,14 +20,14 @@ queue.process('slice', concurrency, function (job, done) {
 
 var SlicerQueue = {};
 
-SlicerQueue.check_job_status = function (job_id) {
+SlicerQueue.checkJobStatus = function (job_id) {
     kue.Job.get(job_id, function(err, job){
         if (err) console.log("job " + job_id + " status: Error");
         else console.log("job " + job_id + " status: " + job.state());
     });
 };
 
-SlicerQueue.create_job = function(data, callback) {
+SlicerQueue.createJob = function(data, callback) {
 
     var job = queue.create('slice', data).ttl(timeToLive).save(
         function (err) {
