@@ -27,7 +27,7 @@ slicerRouter.route('/upload').post(function(req, res){
     // every time a file has been uploaded successfully,
     // give it a random name
     form.on('file', function(field, file) {
-        var newRandomName = new Date().getTime();
+        var newRandomName = new Date().getTime().toString(16);
         fs.rename(file.path, path.join(form.uploadDir, newRandomName + '.stl'));
 
         
@@ -41,7 +41,7 @@ slicerRouter.route('/upload').post(function(req, res){
             }
             else{
                 client.hset(newRandomName, "jobId", job.id);
-                res.json({ message: 'File Uploaded Successfully.', id: job.id});
+                res.json({ message: 'File Uploaded Successfully.', id: newRandomName});
             }
         });
 
@@ -63,11 +63,11 @@ slicerRouter.route('/upload').post(function(req, res){
 
 slicerRouter.route('/status/:jobId').get(function (req, res) {
     console.log(req.params.jobId);
-    SlicerQueue.checkJobStatus(req.params.jobId, function(err, job){
-        if (err) res.json({ message: "We couldn't get job status", error: err});
-        else{
-            res.json({ message: 'Job Status :' + job.state(), data: job.data});
-            console.log("job " + job.id + " status: " + job.state());
+    client.hgetall(req.params.jobId, function(err, job) {
+        if (err || job === null) {
+            res.json({ message: "We couldn't get job status", error: err});
+        } else {
+            res.json({ message: 'Job Status :' + job.state, data: job});
         }
     });
 });
