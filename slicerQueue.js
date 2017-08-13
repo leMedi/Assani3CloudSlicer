@@ -42,9 +42,11 @@ SlicerQueue.createJob = function(data, callback) {
     job
         .on('complete', function(){
             console.log('Job ' + data.title + '(' + job.id + ') completed');
+            client.hset(job.data.id, "state", "completed");
         })
         .on('failed', function() {
             console.log('Job ' + data.title + '(' + job.id + ') failed');
+            client.hset(job.data.id, "state", "failed");
         });
 
 };
