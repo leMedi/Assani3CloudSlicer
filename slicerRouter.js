@@ -5,6 +5,9 @@ var formidable = require('formidable');
 var fs = require('fs');
 var SlicerQueue = require('./SlicerQueue');
 
+var redis = require("redis"),
+    client = redis.createClient();
+
 
 var slicerRouter = express.Router();
 
@@ -27,6 +30,7 @@ slicerRouter.route('/upload').post(function(req, res){
         var newRandomName = new Date().getTime();
         fs.rename(file.path, path.join(form.uploadDir, newRandomName + '.stl'));
 
+        
         // start slicing job
         SlicerQueue.createJob({
             id: newRandomName,
@@ -36,6 +40,7 @@ slicerRouter.route('/upload').post(function(req, res){
                 res.json({ message: 'File Uploaded Successfully.', error: err});
             }
             else{
+                client.hset(newRandomName, "jobId", job.id);
                 res.json({ message: 'File Uploaded Successfully.', id: job.id});
             }
         });
