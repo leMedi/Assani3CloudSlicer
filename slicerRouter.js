@@ -56,4 +56,15 @@ slicerRouter.route('/upload').post(function(req, res){
      form.parse(req);               // parse the incoming request
 });
 
+slicerRouter.route('/status/:jobId').get(function (req, res) {
+    console.log(req.params.jobId);
+    SlicerQueue.checkJobStatus(req.params.jobId, function(err, job){
+        if (err) res.json({ message: "We couldn't get job status", error: err});
+        else{
+            res.json({ message: 'Job Status :' + job.state(), data: job.data});
+            console.log("job " + job.id + " status: " + job.state());
+        }
+    });
+});
+
 module.exports = slicerRouter;
