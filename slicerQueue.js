@@ -29,7 +29,7 @@ SlicerQueue.check_job_status = function (job_id) {
 
 SlicerQueue.create_job = function(data, callback) {
 
-    var job = queue.create('slice', data).ttl(10 * 1000).ttl(timeToLive).save(
+    var job = queue.create('slice', data).ttl(timeToLive).save(
         function (err) {
             callback(job, err);
         }
