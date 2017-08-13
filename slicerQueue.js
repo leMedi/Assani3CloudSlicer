@@ -20,6 +20,13 @@ queue.process('slice', concurrency, function (job, done) {
 
 
 
+check_job_status = function (job_id) {
+    kue.Job.get(job_id, function(err, job){
+        if (err) console.log("job " + job_id + " status: Error");
+        else console.log("job " + job_id + " status: " + job.state());
+    });
+};
+
 create_job = function(data, callback) {
 
     var job = queue.create('slice', data).ttl(10 * 1000).ttl(timeToLive).save(
