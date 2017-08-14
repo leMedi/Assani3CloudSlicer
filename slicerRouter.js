@@ -16,7 +16,7 @@ slicerRouter.route('/').get(function (req, res) {
     res.json({ message: 'A cool api :)' });  
 });
 
-slicerRouter.route('/upload').post(function(req, res){
+slicerRouter.route('/upload/:email').post(function(req, res){
     var form = new formidable.IncomingForm();
 
     form.multiples = true;         // allow user to upload files
@@ -34,7 +34,8 @@ slicerRouter.route('/upload').post(function(req, res){
         // start slicing job
         SlicerQueue.createJob({
             id: newRandomName,
-            title: file.name // original file name
+            title: file.name, // original file name
+            ownerEmail: req.params.email
         }, function (job, err) {
             if(err){
                 res.json({ message: 'File Uploaded Successfully.', error: err});
