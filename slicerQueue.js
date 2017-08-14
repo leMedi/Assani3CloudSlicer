@@ -2,7 +2,7 @@ var slicer = require('./slicer'),
     kue = require('kue'),
     queue = require('kue').createQueue();
 
-var redis = require("redis"),
+var redis = require('redis'),
     client = redis.createClient();
 
 ////////////////////////////////////
@@ -14,13 +14,13 @@ var concurrency = 10, // max active jobs
 // KueJs process
 queue.process('slice', concurrency, function (job, done) {  
     slicer(job.data.id, function (fileId, fileInfo) {
-        console.log("done slicing " + job.data.title);
-        client.hset(job.data.id, "estimatedTime", fileInfo.estimatedTime);
-        client.hset(job.data.id, "estimatedFilamentLength", fileInfo.estimatedFilamentLength);
-        client.hset(job.data.id, "dimX", fileInfo.Dimensions.X);
-        client.hset(job.data.id, "dimY", fileInfo.Dimensions.Y);
-        client.hset(job.data.id, "dimZ", fileInfo.Dimensions.Z);
-        client.hset(job.data.id, "estimatedWeight", fileInfo.estimatedWeight);
+        console.log('done slicing ' + job.data.title);
+        client.hset(job.data.id, 'estimatedTime', fileInfo.estimatedTime);
+        client.hset(job.data.id, 'estimatedFilamentLength', fileInfo.estimatedFilamentLength);
+        client.hset(job.data.id, 'dimX', fileInfo.Dimensions.X);
+        client.hset(job.data.id, 'dimY', fileInfo.Dimensions.Y);
+        client.hset(job.data.id, 'dimZ', fileInfo.Dimensions.Z);
+        client.hset(job.data.id, 'estimatedWeight', fileInfo.estimatedWeight);
         done();
     });
 });
@@ -42,11 +42,11 @@ SlicerQueue.createJob = function(data, callback) {
     job
         .on('complete', function(){
             console.log('Job ' + data.title + '(' + job.id + ') completed');
-            client.hset(job.data.id, "state", "completed");
+            client.hset(job.data.id, 'state', 'completed');
         })
         .on('failed', function() {
             console.log('Job ' + data.title + '(' + job.id + ') failed');
-            client.hset(job.data.id, "state", "failed");
+            client.hset(job.data.id, 'state', 'failed');
         });
 
 };

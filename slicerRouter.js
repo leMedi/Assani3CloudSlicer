@@ -19,14 +19,15 @@ slicerRouter.route('/').get(function (req, res) {
 slicerRouter.route('/upload/:email').post(function(req, res){
     var form = new formidable.IncomingForm();
 
-    form.multiples = true;         // allow user to upload files
+    form.multiples = true;  // allow user to upload files
 
     // store all uploads in the /uploads directory
     form.uploadDir = path.join(__dirname, '/uploads');
 
     // every time a file has been uploaded successfully,
-    // give it a random name
     form.on('file', function(field, file) {
+        
+        // give it a random name
         var newRandomName = new Date().getTime().toString(16);
         fs.rename(file.path, path.join(form.uploadDir, newRandomName + '.stl'));
 
@@ -41,7 +42,7 @@ slicerRouter.route('/upload/:email').post(function(req, res){
                 res.json({ message: 'File Uploaded Successfully.', error: err});
             }
             else{
-                client.hset(newRandomName, "jobId", job.id);
+                client.hset(newRandomName, 'jobId', job.id);
                 res.json({ message: 'File Uploaded Successfully.', id: newRandomName});
             }
         });
@@ -54,10 +55,8 @@ slicerRouter.route('/upload/:email').post(function(req, res){
         res.json({ message: 'An error has occured: ' + err, error: err});
     });
 
-    // once all the files have been uploaded, send a response to the client
-    form.on('end', function() {
-        //res.json({ message: 'File Uploaded Successfully.'});
-    });
+    // once all the files have been uploaded
+    // form.on('end', function() { });
 
     if(validateEmail(req.params.email))
         form.parse(req);    // parse the incoming request

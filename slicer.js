@@ -1,11 +1,11 @@
 var path = require('path');
 var exec = require('child_process').exec;
 
-var slic3rPath = path.join(__dirname, "./bin/Slic3r/slic3r-console.exe");
-var gcoderPath = path.join(__dirname, "./bin/gcoder.py");
+var slic3rPath = path.join(__dirname, './bin/Slic3r/slic3r-console.exe');
+var gcoderPath = path.join(__dirname, './bin/gcoder.py');
 
 function slice(Id, callback) {
-    runSlic3r(Id, "1", function (stlFileId) {
+    runSlic3r(Id, '1', function (stlFileId) {
         runGcoder(stlFileId, function(stdout) {
             var fileInfo = parseGcoderOutput(stdout);
             fileInfo.estimatedWeight = calculateWeight(fileInfo.estimatedFilamentLength);
@@ -17,12 +17,12 @@ function slice(Id, callback) {
 
 function runSlic3r(stlFileId, config, callback, errorCb) {
     
-    var stlFile = path.join(__dirname, "/uploads/" + stlFileId +  ".stl");
-    var gcodeFile = path.join(__dirname, "/outputs/" + stlFileId +  ".gcode"); // generate path for .gcode file
-    var configFile = path.join(__dirname, "/configs/" + config +  ".ini");
+    var stlFile = path.join(__dirname, '/uploads/' + stlFileId +  '.stl');
+    var gcodeFile = path.join(__dirname, '/outputs/' + stlFileId +  '.gcode'); // generate path for .gcode file
+    var configFile = path.join(__dirname, '/configs/' + config +  '.ini');
     
 	// slic3r command: slic3r example.stl --load example.ini --output example.gcode 
-    var command = slic3rPath + " " + stlFile + " --load " + configFile + " --output " + gcodeFile; // silce .stl using slic3r
+    var command = slic3rPath + ' ' + stlFile + ' --load ' + configFile + ' --output ' + gcodeFile; // silce .stl using slic3r
 
 	exec(command,function(error, stdout, stderr){
 		if (error) {
@@ -35,9 +35,9 @@ function runSlic3r(stlFileId, config, callback, errorCb) {
 function runGcoder(gcodeFileId, callback, errorCb) {
     var exec = require('child_process').exec;
     
-    var gcodeFile = path.join(__dirname, "/outputs/" + gcodeFileId +  ".gcode"); // generate path for .gcode file
+    var gcodeFile = path.join(__dirname, '/outputs/' + gcodeFileId +  '.gcode'); // generate path for .gcode file
     
-	var command = "python  " + gcoderPath + " " + gcodeFile;
+	var command = 'python  ' + gcoderPath + " " + gcodeFile;
 
 	exec(command,function(error, stdout, stderr){
 		if (error) {
@@ -57,25 +57,24 @@ function parseGcoderOutput(gcoderOutput){
         }
 	};
 
-	lines = gcoderOutput.split("\n");
+	lines = gcoderOutput.split('\n');
 
 	Output.estimatedTime = lines[9].substr(20); // get estimated print time
 	Output.estimatedFilamentLength = parseInt(lines[7].slice(3,lines[7].length-2)); // get estimated filament to be used for printing object
-	Output.Dimensions.X = lines[3].slice(lines[3].indexOf("(")+1, lines[3].indexOf(")")); 
-	Output.Dimensions.Y = lines[4].slice(lines[4].indexOf("(")+1, lines[4].indexOf(")")); 
-	Output.Dimensions.Z = lines[5].slice(lines[5].indexOf("(")+1, lines[5].indexOf(")")); 
+	Output.Dimensions.X = lines[3].slice(lines[3].indexOf('(')+1, lines[3].indexOf(')')); 
+	Output.Dimensions.Y = lines[4].slice(lines[4].indexOf('(')+1, lines[4].indexOf(')')); 
+	Output.Dimensions.Z = lines[5].slice(lines[5].indexOf('(')+1, lines[5].indexOf(')')); 
 
     return Output;
-	// callback(estimatedTime, estimatedFilamentLength, Dimensions);
 }
 
 // get density for plastic used to print the object
 function getDensity(fillType){ // en g/cm3 (metric system is cool)
 	fillType = fillType.toString().toUpperCase();
 	switch(fillType){
-		case "ABS":
+		case 'ABS':
 			return 1.4;
-		case "PLA":
+		case 'PLA':
 			return 1.25;
 	}
 }
@@ -84,7 +83,7 @@ function calculateWeight(fillLength, fillDiameter, fillType){ // en g
 
 	// default values
     var fillDiameter = typeof fillDiameter !== 'undefined' ?  parseInt(fillDiameter) : 1.75; // most of the printers we have, use fillament of this diametre
-	var fillType = typeof fillType !== 'undefined' ?  fillType : "ABS";
+	var fillType = typeof fillType !== 'undefined' ?  fillType : 'ABS';
 
 	var fillradius = fillDiameter/2,
 		section = fillradius * fillradius * Math.PI,
