@@ -59,7 +59,11 @@ slicerRouter.route('/upload/:email').post(function(req, res){
         //res.json({ message: 'File Uploaded Successfully.'});
     });
 
-     form.parse(req);               // parse the incoming request
+    if(validateEmail(req.params.email))
+        form.parse(req);    // parse the incoming request
+    else
+        res.json({ message: 'Please provide a valid Email', error: 'email not valid'});
+                      
 });
 
 slicerRouter.route('/status/:jobId').get(function (req, res) {
@@ -72,5 +76,10 @@ slicerRouter.route('/status/:jobId').get(function (req, res) {
         }
     });
 });
+
+function validateEmail(email) {
+  var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+  return re.test(email);
+}
 
 module.exports = slicerRouter;
