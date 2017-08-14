@@ -13,15 +13,21 @@ var concurrency = 10, // max active jobs
 
 // KueJs process
 queue.process('slice', concurrency, function (job, done) {  
-    slicer(job.data.id, function (fileId, fileInfo) {
-        console.log('done slicing ' + job.data.title);
-        client.hset(job.data.id, 'estimatedTime', fileInfo.estimatedTime);
-        client.hset(job.data.id, 'estimatedFilamentLength', fileInfo.estimatedFilamentLength);
-        client.hset(job.data.id, 'dimX', fileInfo.Dimensions.X);
-        client.hset(job.data.id, 'dimY', fileInfo.Dimensions.Y);
-        client.hset(job.data.id, 'dimZ', fileInfo.Dimensions.Z);
-        client.hset(job.data.id, 'estimatedWeight', fileInfo.estimatedWeight);
-        done();
+    slicer(job.data.id, function (err, fileId, fileInfo) {
+        if (err) {
+            console.error('[!]> Error slicing file ' + job.data.title + ' - ' + job.data.id);
+            console.error(err);
+            done(new Error('Slicing failed'));
+        } else {
+            console.log('done slicing successfully' + job.data.title + ' - ' + job.data.id);
+            client.hset(job.data.id, 'estimatedTime', fileInfo.estimatedTime);
+            client.hset(job.data.id, 'estimatedFilamentLength', fileInfo.estimatedFilamentLength);
+            client.hset(job.data.id, 'dimX', fileInfo.Dimensions.X);
+            client.hset(job.data.id, 'dimY', fileInfo.Dimensions.Y);
+            client.hset(job.data.id, 'dimZ', fileInfo.Dimensions.Z);
+            client.hset(job.data.id, 'estimatedWeight', fileInfo.estimatedWeight);
+            done();
+        }
     });
 });
 

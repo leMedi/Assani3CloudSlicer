@@ -5,17 +5,24 @@ var slic3rPath = path.join(__dirname, './bin/Slic3r/slic3r-console.exe');
 var gcoderPath = path.join(__dirname, './bin/gcoder.py');
 
 function slice(Id, callback) {
-    runSlic3r(Id, '1', function (stlFileId) {
-        runGcoder(stlFileId, function(stdout) {
-            var fileInfo = parseGcoderOutput(stdout);
-            fileInfo.estimatedWeight = calculateWeight(fileInfo.estimatedFilamentLength);
-			
-			callback(Id, fileInfo);
-        });
+    runSlic3r(Id, '1', function (error, stlFileId) {
+		if(error)
+			callback(error);
+		else
+			runGcoder(stlFileId, function(error, stdout) {
+				if(error)
+					callback(error);
+				else{
+					var fileInfo = parseGcoderOutput(stdout);
+					fileInfo.estimatedWeight = calculateWeight(fileInfo.estimatedFilamentLength);
+					
+					callback(false, Id, fileInfo);
+				}
+			});
     });
 }
 
-function runSlic3r(stlFileId, config, callback, errorCb) {
+function runSlic3r(stlFileId, config, callback) {
     
     var stlFile = path.join(__dirname, '/uploads/' + stlFileId +  '.stl');
     var gcodeFile = path.join(__dirname, '/outputs/' + stlFileId +  '.gcode'); // generate path for .gcode file
@@ -25,10 +32,10 @@ function runSlic3r(stlFileId, config, callback, errorCb) {
     var command = slic3rPath + ' ' + stlFile + ' --load ' + configFile + ' --output ' + gcodeFile; // silce .stl using slic3r
 
 	exec(command,function(error, stdout, stderr){
-		if (error) {
-            errorCb(stlFileId, error);
-        }else
-            callback(stlFileId);
+		if (error)
+			callback(error);
+        else
+            callback(false, stlFileId);
 	});
 }
 
@@ -40,11 +47,10 @@ function runGcoder(gcodeFileId, callback, errorCb) {
 	var command = 'python  ' + gcoderPath + " " + gcodeFile;
 
 	exec(command,function(error, stdout, stderr){
-		if (error) {
-            console.log(error);
-            //errorCb(error);
-		}else
-		    callback(stdout); // todo: parse gcoder.py output
+		if (error)
+			callback(error);
+		else
+		    callback(false, stdout);
 	});
 }
 
