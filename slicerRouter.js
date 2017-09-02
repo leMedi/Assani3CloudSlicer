@@ -39,7 +39,7 @@ slicerRouter.route('/upload/:email').post(function(req, res){
             ownerEmail: req.params.email
         }, function (job, err) {
             if(err){
-                res.json({ message: 'File Uploaded Successfully.', error: err});
+                res.json({ message: "Couldn't start slicing job", error: err});
             }
             else{
                 client.hset(newRandomName, 'jobId', job.id);
