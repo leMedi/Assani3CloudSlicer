@@ -1,11 +1,12 @@
 var path = require('path');
 var exec = require('child_process').exec;
 
-var slic3rPath = path.join(__dirname, './bin/Slic3r/slic3r-console.exe');
-var gcoderPath = path.join(__dirname, './bin/gcoder.py');
+var slic3rPath = path.resolve(process.env.SLIC3R_PATH);
+var gcoderPath = path.resolve(process.env.GCODER_PATH);
+var slic3rConfigFile = process.env.SLIC3R_CONFIG_FILE;
 
 function slice(Id, callback) {
-    runSlic3r(Id, '1', function (error, stlFileId) {
+    runSlic3r(Id, slic3rConfigFile, function (error, stlFileId) {
 		if(error)
 			callback(error);
 		else

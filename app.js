@@ -3,6 +3,8 @@ var express    = require('express');        // call express
 var app        = express();                 // define our app using express
 var cors = require('cors');
 
+require('dotenv').config();
+
 var port = process.env.PORT || 8080;        // set our port
 
 app.use(cors());
