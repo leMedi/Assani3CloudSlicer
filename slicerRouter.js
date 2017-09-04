@@ -39,11 +39,11 @@ slicerRouter.route('/upload/:email').post(function(req, res){
             ownerEmail: req.params.email
         }, function (job, err) {
             if(err){
-                res.json({ message: "Couldn't start slicing job", error: err});
+                res.status(503).json({ message: process.env.STARTING_JOB_ERR, error: err});
             }
             else{
                 client.hset(newRandomName, 'jobId', job.id);
-                res.json({ message: 'File Uploaded Successfully.', id: newRandomName});
+                res.json({ message: process.env.JOB_STARTED, id: newRandomName});
             }
         });
 
@@ -52,7 +52,7 @@ slicerRouter.route('/upload/:email').post(function(req, res){
     // log any errors that occur
     form.on('error', function(err) {
         console.log(err);
-        res.json({ message: 'An error has occured: ' + err, error: err});
+        res.status(400).json({ message: process.env.STARTING_JOB_ERR, error: err});
     });
 
     // once all the files have been uploaded
@@ -61,7 +61,7 @@ slicerRouter.route('/upload/:email').post(function(req, res){
     if(validateEmail(req.params.email))
         form.parse(req);    // parse the incoming request
     else
-        res.json({ message: 'Please provide a valid Email', error: 'email not valid'});
+        res.status(400).json({ message: process.env.INVALID_EMAIL, error: 'email not valid'});
                       
 });
 
@@ -69,9 +69,9 @@ slicerRouter.route('/status/:jobId').get(function (req, res) {
     console.log(req.params.jobId);
     client.hgetall(req.params.jobId, function(err, job) {
         if (err || job === null) {
-            res.json({ message: "We couldn't get job status", error: err});
+            res.status(404).json({ message: process.env.INVALID_JOB_ID, error: err});
         } else {
-            res.json({ message: 'Job Status :' + job.state, data: job});
+            res.json({ data: job });
         }
     });
 });
