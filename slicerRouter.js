@@ -43,6 +43,7 @@ slicerRouter.route('/upload/:email').post(function(req, res){
             }
             else{
                 client.hset(newRandomName, 'jobId', job.id);
+                client.hset(job.data.id, 'state', 'pending');
                 res.json({ message: process.env.JOB_STARTED, id: newRandomName});
             }
         });
