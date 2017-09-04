@@ -3,7 +3,7 @@ var app = express();
 var path = require('path');
 var formidable = require('formidable');
 var fs = require('fs');
-var SlicerQueue = require('./SlicerQueue');
+var SlicerQueue = require('./slicerQueue');
 
 var redis = require("redis"),
     client = redis.createClient();
